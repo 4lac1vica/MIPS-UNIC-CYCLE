@@ -1,0 +1,412 @@
+
+*** Running vivado
+    with args -log test_env.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source test_env.tcl
+
+
+
+****** Vivado v2024.1 (64-bit)
+  **** SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+  **** IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+  **** SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+  **** Start of session at: Tue Nov  4 16:53:38 2025
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source test_env.tcl -notrace
+create_project: Time (s): cpu = 00:00:04 ; elapsed = 00:00:09 . Memory (MB): peak = 569.566 ; gain = 239.172
+Command: read_checkpoint -auto_incremental -incremental D:/AC/MIPS_FINAL/MIPS_FINAL.srcs/utils_1/imports/synth_1/test_env.dcp
+INFO: [Vivado 12-5825] Read reference checkpoint from D:/AC/MIPS_FINAL/MIPS_FINAL.srcs/utils_1/imports/synth_1/test_env.dcp for incremental synthesis
+INFO: [Vivado 12-7989] Please ensure there are no constraint changes
+Command: synth_design -top test_env -part xc7a100tcsg324-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Device 21-403] Loading part xc7a100tcsg324-1
+INFO: [Device 21-9227] Part: xc7a100tcsg324-1 does not have CEAM library.
+INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
+INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 13736
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:03 ; elapsed = 00:00:05 . Memory (MB): peak = 1436.684 ; gain = 448.508
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'test_env' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:47]
+INFO: [Synth 8-3491] module 'MPG' declared at 'D:/AC/FINAL/FINAL.srcs/sources_1/new/MPG.vhd:14' bound to instance 'mpg10' of component 'MPG' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:198]
+INFO: [Synth 8-638] synthesizing module 'MPG' [D:/AC/FINAL/FINAL.srcs/sources_1/new/MPG.vhd:20]
+INFO: [Synth 8-256] done synthesizing module 'MPG' (0#1) [D:/AC/FINAL/FINAL.srcs/sources_1/new/MPG.vhd:20]
+INFO: [Synth 8-3491] module 'IFetch' declared at 'D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:34' bound to instance 'ife' of component 'IFetch' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:199]
+INFO: [Synth 8-638] synthesizing module 'IFetch' [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:48]
+INFO: [Synth 8-226] default block is never used [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:126]
+WARNING: [Synth 8-614] signal 'jumpAddress' is read in the process but is not in the sensitivity list [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:124]
+WARNING: [Synth 8-614] signal 'mux1' is read in the process but is not in the sensitivity list [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:124]
+INFO: [Synth 8-226] default block is never used [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:135]
+WARNING: [Synth 8-614] signal 'branchAdress' is read in the process but is not in the sensitivity list [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:133]
+WARNING: [Synth 8-614] signal 'suma' is read in the process but is not in the sensitivity list [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:133]
+INFO: [Synth 8-256] done synthesizing module 'IFetch' (0#1) [D:/AC/FINAL/FINAL.srcs/sources_1/new/IFetch.vhd:48]
+WARNING: [Synth 8-5640] Port 'rt' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:63]
+WARNING: [Synth 8-5640] Port 'rd' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:63]
+WARNING: [Synth 8-5640] Port 'wa' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:63]
+INFO: [Synth 8-3491] module 'Decoder' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:34' bound to instance 'dec' of component 'Decoder' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:200]
+INFO: [Synth 8-638] synthesizing module 'Decoder' [D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:50]
+INFO: [Synth 8-256] done synthesizing module 'Decoder' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:50]
+WARNING: [Synth 8-5640] Port 'rt' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:105]
+WARNING: [Synth 8-5640] Port 'rd' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:105]
+WARNING: [Synth 8-5640] Port 'rwa' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:105]
+WARNING: [Synth 8-5640] Port 'regdst' is missing in component declaration [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:105]
+INFO: [Synth 8-3491] module 'EX' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:34' bound to instance 'execution' of component 'EX' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:201]
+INFO: [Synth 8-638] synthesizing module 'EX' [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:54]
+INFO: [Synth 8-226] default block is never used [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:60]
+WARNING: [Synth 8-614] signal 'rd2' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:76]
+WARNING: [Synth 8-614] signal 'extImm' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:76]
+INFO: [Synth 8-226] default block is never used [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:112]
+WARNING: [Synth 8-614] signal 'rd' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:110]
+WARNING: [Synth 8-614] signal 'rt' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:110]
+INFO: [Synth 8-256] done synthesizing module 'EX' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:54]
+INFO: [Synth 8-3491] module 'UC' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/UC.vhd:34' bound to instance 'control' of component 'UC' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:202]
+INFO: [Synth 8-638] synthesizing module 'UC' [D:/AC/Decoder/Decoder.srcs/sources_1/new/UC.vhd:50]
+INFO: [Synth 8-256] done synthesizing module 'UC' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/UC.vhd:50]
+INFO: [Synth 8-3491] module 'MEM' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/MEM.vhd:34' bound to instance 'memorie' of component 'MEM' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:203]
+INFO: [Synth 8-638] synthesizing module 'MEM' [D:/AC/Decoder/Decoder.srcs/sources_1/new/MEM.vhd:46]
+INFO: [Synth 8-256] done synthesizing module 'MEM' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/MEM.vhd:46]
+INFO: [Synth 8-3491] module 'WriteBack' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/WriteBack.vhd:34' bound to instance 'writeB' of component 'WriteBack' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:204]
+INFO: [Synth 8-638] synthesizing module 'WriteBack' [D:/AC/Decoder/Decoder.srcs/sources_1/new/WriteBack.vhd:45]
+WARNING: [Synth 8-614] signal 'aluRezOut' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/WriteBack.vhd:47]
+WARNING: [Synth 8-614] signal 'memData' is read in the process but is not in the sensitivity list [D:/AC/Decoder/Decoder.srcs/sources_1/new/WriteBack.vhd:47]
+INFO: [Synth 8-256] done synthesizing module 'WriteBack' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/WriteBack.vhd:45]
+INFO: [Synth 8-3491] module 'JUnit' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/JUnit.vhd:34' bound to instance 'jumpUnit' of component 'JUnit' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:205]
+INFO: [Synth 8-638] synthesizing module 'JUnit' [D:/AC/Decoder/Decoder.srcs/sources_1/new/JUnit.vhd:42]
+INFO: [Synth 8-256] done synthesizing module 'JUnit' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/JUnit.vhd:42]
+INFO: [Synth 8-3491] module 'BranchUnit' declared at 'D:/AC/Decoder/Decoder.srcs/sources_1/new/BranchUnit.vhd:35' bound to instance 'branchU' of component 'BranchUnit' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:206]
+INFO: [Synth 8-638] synthesizing module 'BranchUnit' [D:/AC/Decoder/Decoder.srcs/sources_1/new/BranchUnit.vhd:44]
+INFO: [Synth 8-256] done synthesizing module 'BranchUnit' (0#1) [D:/AC/Decoder/Decoder.srcs/sources_1/new/BranchUnit.vhd:44]
+INFO: [Synth 8-226] default block is never used [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:210]
+WARNING: [Synth 8-614] signal 'instr' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'PC4' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'rd1' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'rd2' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'extImm' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'aluRes' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'memData' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+WARNING: [Synth 8-614] signal 'wb' is read in the process but is not in the sensitivity list [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:208]
+INFO: [Synth 8-3491] module 'SSD1' declared at 'D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:14' bound to instance 'sevensegm' of component 'SSD1' [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:224]
+INFO: [Synth 8-638] synthesizing module 'SSD1' [D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:21]
+INFO: [Synth 8-226] default block is never used [D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:40]
+INFO: [Synth 8-226] default block is never used [D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:55]
+INFO: [Synth 8-226] default block is never used [D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:68]
+INFO: [Synth 8-256] done synthesizing module 'SSD1' (0#1) [D:/AC/FINAL/FINAL.srcs/sources_1/new/SSD1.vhd:21]
+INFO: [Synth 8-256] done synthesizing module 'test_env' (0#1) [D:/AC/MIPS_UNIC_CYCLE/MIPS_UNIC_CYCLE.srcs/sources_1/new/test_env.vhd:47]
+WARNING: [Synth 8-3848] Net regWr in module/entity Decoder does not have driver. [D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:53]
+WARNING: [Synth 8-3848] Net en in module/entity Decoder does not have driver. [D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:54]
+WARNING: [Synth 8-3848] Net extOp in module/entity Decoder does not have driver. [D:/AC/Decoder/Decoder.srcs/sources_1/new/Decoder.vhd:55]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:07 . Memory (MB): peak = 1548.141 ; gain = 559.965
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:04 ; elapsed = 00:00:07 . Memory (MB): peak = 1548.141 ; gain = 559.965
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:04 ; elapsed = 00:00:07 . Memory (MB): peak = 1548.141 ; gain = 559.965
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 1548.141 ; gain = 0.000
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [C:/Users/todit/Downloads/NexysA7_test_env.xdc]
+WARNING: [Vivado 12-584] No ports matched 'sw[3]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:16]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:16]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[4]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:17]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:17]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[5]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:18]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:18]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[6]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:19]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:19]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[7]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:20]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:20]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[8]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:21]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:21]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[9]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:22]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:22]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[10]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:23]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:23]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[11]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:24]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:24]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[12]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:25]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:25]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[13]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:26]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:26]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[14]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:27]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:27]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'sw[15]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:28]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:28]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'led[11]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:43]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:43]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'led[12]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:44]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:44]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'led[13]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:45]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:45]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'led[14]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:46]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:46]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'led[15]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:47]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:47]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'btn[2]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:73]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:73]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'btn[3]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:74]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:74]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+WARNING: [Vivado 12-584] No ports matched 'btn[4]'. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:75]
+CRITICAL WARNING: [Common 17-55] 'set_property' expects at least one object. [C:/Users/todit/Downloads/NexysA7_test_env.xdc:75]
+Resolution: If [get_<value>] was used to populate the object, check to make sure this command returns at least one valid object.
+Finished Parsing XDC File [C:/Users/todit/Downloads/NexysA7_test_env.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/todit/Downloads/NexysA7_test_env.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/test_env_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/test_env_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1639.746 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.003 . Memory (MB): peak = 1639.746 ; gain = 0.000
+INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
+INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:08 ; elapsed = 00:00:15 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a100tcsg324-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:08 ; elapsed = 00:00:15 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:08 ; elapsed = 00:00:15 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-327] inferring latch for variable 'aluRez1_reg' [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:80]
+WARNING: [Synth 8-327] inferring latch for variable 'zero_reg' [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:102]
+WARNING: [Synth 8-327] inferring latch for variable 'aluCtrl_reg' [D:/AC/Decoder/Decoder.srcs/sources_1/new/EX.vhd:63]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:08 ; elapsed = 00:00:15 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   32 Bit       Adders := 4     
+	   3 Input   32 Bit       Adders := 1     
++---XORs : 
+	   2 Input     32 Bit         XORs := 1     
++---Registers : 
+	               32 Bit    Registers := 2     
+	                1 Bit    Registers := 3     
++---RAMs : 
+	               2K Bit	(64 X 32 bit)          RAMs := 1     
+	             1024 Bit	(32 X 32 bit)          RAMs := 1     
++---Muxes : 
+	   2 Input   32 Bit        Muxes := 7     
+	  33 Input   32 Bit        Muxes := 1     
+	   4 Input   32 Bit        Muxes := 2     
+	   8 Input    8 Bit        Muxes := 1     
+	   2 Input    5 Bit        Muxes := 1     
+	   8 Input    2 Bit        Muxes := 1     
+	   8 Input    1 Bit        Muxes := 9     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 240 (col length:80)
+BRAMs: 270 (col length: RAMB18 80 RAMB36 40)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+WARNING: [Synth 8-3917] design test_env has port led[2] driven by constant 0
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:09 ; elapsed = 00:00:18 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Preliminary Mapping Report (see note below)
++------------+-----------------+-----------+----------------------+----------------+
+|Module Name | RTL Object      | Inference | Size (Depth x Width) | Primitives     | 
++------------+-----------------+-----------+----------------------+----------------+
+|test_env    | memorie/mem_reg | Implied   | 64 x 32              | RAM64X1S x 32  | 
++------------+-----------------+-----------+----------------------+----------------+
+
+Note: The table above is a preliminary report that shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:12 ; elapsed = 00:00:24 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:13 ; elapsed = 00:00:24 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: Final Mapping Report
++------------+-----------------+-----------+----------------------+----------------+
+|Module Name | RTL Object      | Inference | Size (Depth x Width) | Primitives     | 
++------------+-----------------+-----------+----------------------+----------------+
+|test_env    | memorie/mem_reg | Implied   | 64 x 32              | RAM64X1S x 32  | 
++------------+-----------------+-----------+----------------------+----------------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:13 ; elapsed = 00:00:25 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+---------+------+
+|      |Cell     |Count |
++------+---------+------+
+|1     |BUFG     |     1|
+|2     |CARRY4   |    30|
+|3     |LUT1     |    19|
+|4     |LUT2     |     1|
+|5     |LUT3     |    29|
+|6     |LUT4     |    14|
+|7     |LUT5     |    66|
+|8     |LUT6     |    67|
+|9     |MUXF7    |    16|
+|10    |RAM64X1S |     5|
+|11    |FDCE     |    30|
+|12    |FDRE     |    47|
+|13    |LD       |    21|
+|14    |IBUF     |     6|
+|15    |OBUF     |    26|
++------+---------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 5 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:10 ; elapsed = 00:00:27 . Memory (MB): peak = 1639.746 ; gain = 559.965
+Synthesis Optimization Complete : Time (s): cpu = 00:00:15 ; elapsed = 00:00:29 . Memory (MB): peak = 1639.746 ; gain = 651.570
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.005 . Memory (MB): peak = 1639.746 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 72 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1639.746 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 26 instances were transformed.
+  LD => LDCE: 21 instances
+  RAM64X1S => RAM64X1S (RAMS64E): 5 instances
+
+Synth Design complete | Checksum: 9ee962e3
+INFO: [Common 17-83] Releasing license: Synthesis
+62 Infos, 54 Warnings, 21 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:17 ; elapsed = 00:00:35 . Memory (MB): peak = 1639.746 ; gain = 1065.828
+INFO: [runtcl-6] Synthesis results are not added to the cache due to CRITICAL_WARNING
+Write ShapeDB Complete: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1639.746 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'D:/AC/MIPS_FINAL/MIPS_FINAL.runs/synth_1/test_env.dcp' has been generated.
+INFO: [Vivado 12-24828] Executing command : report_utilization -file test_env_utilization_synth.rpt -pb test_env_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Tue Nov  4 16:54:24 2025...
