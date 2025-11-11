@@ -2,7 +2,7 @@
 Source Code for MIPS Unic Cycle. In this document I will explain how MIPS Unic Cycle works and how I implemented it (using Xilinx Vivado and VHDL).
 
 
-#EN
+# EN
 
 First of all, we need to understand what MIPS stands for. MIPS stands for Microprocessor without Interlockeded Pipeline Stages. This means that there are no hardaware interlocks in the pipeline and the compiler handles hazard avoidance. This type of microprocessor consists of several subcomponents, each with its own specific functionality, which I will describe in the following section. 
 
