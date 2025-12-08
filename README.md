@@ -1,5 +1,11 @@
 # MIPS Unic Cycle
-Here is the source code for MIPS Unic-Cycle.
+
+# Quick Descripton
+
+
+Tools : Xilinx Vivado 2024.1
+
+Tested on Nexys A7. 
 
 
 
