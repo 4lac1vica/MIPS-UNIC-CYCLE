@@ -230,3 +230,130 @@ d) Campuri auxiliare pentru executie
    - **sa** -> campul **shift amount(instruction(10 downto 6))**, utilizat pentru instructiunile de shift.
 
 
+
+3) Execute
+
+   Modulul **EX** implementeaza etapa de execute in arhitectura **MIPS Unic Cycle**. Aceasta etapa responsabila de efectuarea operatiilor aritmetice si logice, de calculul adreselor instructiunilor de tip ***branch*,
+   precum si evaluarea conditiilor de ramificare.
+
+   
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity EX is
+    port (
+        rd1 : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        extImm : in std_logic_vector(31 downto 0);
+        sa : in std_logic_vector(4 downto 0);
+        func : in std_logic_vector(5 downto 0);
+        pc4 : in std_logic_vector(31 downto 0);
+        ba : inout std_logic_vector(31 downto 0);
+        aluSrc : in std_logic;
+        aluOp : in std_logic_vector(1 downto 0);
+        aluRes : out std_logic_vector(31 downto 0);
+        zero : inout std_logic
+    );
+end EX;
+
+architecture Behavioral of EX is
+    signal aluCtrl : std_logic_vector(2 downto 0);
+    signal aluRez1 : std_logic_vector(31 downto 0);
+begin
+    zero <= '0';
+    process(aluOp, func)
+    begin
+        case AluOp is 
+            when "00" => 
+                case func is
+                    when "000001" => aluCtrl <= "000";
+                    when "000010" => aluCtrl <= "010";
+                    when "000100" => aluCtrl <= "100";
+                    when others => 
+                end case;  
+            when "01" => aluCtrl <= "000";
+            when "10" => aluCtrl <= "001";
+            when "11" => aluCtrl <= "011";
+            when others =>    
+        end case;    
+    end process;
+    
+    
+    process(aluCtrl, aluSrc, rd1, sa)
+    begin
+        if (aluSrc = '0') then 
+            case aluCtrl is 
+               when "000" => aluRez1 <= rd1 + rd2;
+               when "010" => aluRez1 <= rd1 xor rd2;
+               when "100" => aluRez1 <= to_stdlogicvector(to_bitvector(rd2) srl conv_integer(sa));
+               when others =>
+            end case;   
+                 
+        else 
+            case aluCtrl is 
+                when "000" => aluRez1 <= rd1 + extImm;
+                when "001" => aluRez1 <= rd1 - extImm;
+                when "011" => aluRez1 <= rd1 and extImm;
+                when others => 
+            end case;     
+        end if;
+    end process;
+    
+  aluRes <= aluRez1;
+  
+  
+  process(aluRez1)
+  begin 
+    if (aluRez1 = x"000000000") then 
+        zero <= '1'; 
+    end if;  
+  end process;
+  
+  
+  ba <= (extImm(29 downto 0) & "00") + pc4;
+  
+  
+end Behavioral;
+```
+Explicatii ale codului: 
+
+a) **ALU Control**
+   - Semnalele **ALU Control** sunt generate pe baza combinatiei dintre:
+        - **aluOp** - semnal provenit de la unitatea de control principala;
+        - **func** - campul **function** al instructiunilor de tip R;
+     Aceste semnale determina ce operatie executa ALU. 
+
+b) **Selectia Operanzilor**
+   - ALU-ul primeste:
+        - primul operand din **rd1**;
+        - al doilea operand in functie de **aluSrc**:
+             - **rd2** pentru instructiuni de tip **R**;
+             - **extImm** pentru instructiuni de tip **I**;
+         
+c) **Operatii ALU**
+   - ALU-ul executa operatiile aritmetice si logice in functie de **aluCtrl**:
+        - **ADD** - adunare
+        - **SUB** - scadere
+        - **AND** - operatie logica
+        - **XOR** - operatie logica
+        - **SRL** - **shift right logical* folosind campul **sa**
+
+d) **Semnalul Zero**
+   - Semnalul de zero este setat atunci cand rezultatul ALU este 0. Acesta este folosit pentru evaluarea instructiunilor de tip **branch**(**beq* si **bne*);
+
+e) **Calculul adresei de branch**
+
+   - Adresa de ramificare este calculata prin:
+        - deplasarea la stanga cu 2 biti a valorii imediate( **extImm << 2** );
+        - adunarea cu **PC + 4**
