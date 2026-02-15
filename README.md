@@ -1,6 +1,6 @@
 # MIPS Unic Cycle
 
-# Quick Descripton
+# Descripton
 
 
 Tools : Xilinx Vivado 2024.1
