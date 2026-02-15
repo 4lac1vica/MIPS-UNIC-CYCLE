@@ -14,7 +14,7 @@ Tested on Nexys A7.
 Acest proiect a fost realizat pentru cursul de Arhitectura Calculatoarelor. Acest proiect are ca scop implementarea in VHDL a unui procesor MIPS pe 32 de biti, avand arhitectura de tip Unic Cycle.
 Un astfel de procesor executa o instructiune complet la un singur ciclu de ceas. Arhitectura respecta modelul clasic de MIPS si include urmatoarele componente:
 
-1) Instruction Fetch
+1) **Instruction Fetch**
    
    In arhitectura MIPS Single Cycle, etapa Instruction Fetch are ca scop citirea unei instructiuni din memoria de instructiuni, folosind o valoare denumita "Program Counnter" (PC). In acelasi ciclu de ceas, PC-ul este actualizat cu PC+4,
    pregatind adresa urmatoarei instructiuni. Un alt lucru important de mentionat este faptul ca instructiunile sunt scrise in MIPS Assembly, fiind convertite la binar folosind un protcol de convertire, in functie de tipul instructiunii.    Fiecare instructiune poate sa fie de 3 tipuri:
@@ -233,7 +233,7 @@ d) Campuri auxiliare pentru executie
 
 
 
-3) Execute
+3) **Execute**
 
    Modulul **EX** implementeaza etapa de execute in arhitectura **MIPS Unic Cycle**. Aceasta etapa responsabila de efectuarea operatiilor aritmetice si logice, de calculul adreselor instructiunilor de tip ***branch*,
    precum si evaluarea conditiilor de ramificare.
@@ -423,3 +423,61 @@ b) **Operatii de citire**
 
 c) **Propagarea rezultatului ALU**
    - Rezultatul calculat in etapa **Execute** este propagat mai departe prin rezultatul semnalului **aluResOut**, pentru a fi utilizat in etapa **Write Back**, in cazul in care instructiunea nu acceseaza memoria
+
+
+5) **Write Back**
+
+   - Modulul **WriteBack** implementeaza pasul cu acelasi nume din arhitectura **MIPS Unic Cycle**. Aceasta etapa are rolul de a selecta valoarea finala in care va fi scrisa in fisierul de registre.
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity WriteBack is
+
+port(
+    memToReg :  in std_logic;
+    aluRezOut : in std_logic_vector(31 downto 0);
+    memData : in std_logic_vector(31 downto 0);
+    writeBack : inout std_logic_vector(31 downto 0)
+   );
+    
+end WriteBack;
+
+architecture Behavioral of WriteBack is
+begin
+    process(memToReg)
+    begin 
+        if memToReg = '0' then 
+            writeBack <= aluRezOut;
+        else 
+            writeBack <= memData;
+        end if;    
+    end process;
+
+end Behavioral;
+```
+Explicatii ale codului : 
+
+a) **Selectia sursei de date**
+   - In functie de tipul instructiunii executate, datele care trebuie sa fie scrise in registru pot sa provina din doua surse:
+        - **Rezultatul ALU** sau **aluRezOut**
+             - pentru instructiunile aritmetice si logice (**de tip R**);
+             - pentru instructiunile de tip **I** care nu acceseaza memoria
+        - **Datele citite din memoria de date (memData)**
+             - pentru instructiunile de tip **load**
+   - Selectia intre cele doua surse se face prin intermediul semnalului de control **memToReg**:
+        - *memToReg = 0* -> se calculeaza rezultatul ALU
+        - *memToReg = 1* -> se selecteaza datele din memorie 
+b) **Iesirea din Write Back**
+   - Semnalul *writeBack* reprezinta valoarea finala care este trimisa catre fisierul de registre, unde va fi scrisa in registrul destinatie in etapa de **Instruction Decode**
+   - Aceasta etapa nu realizeaza operatii secventiale si nu utilizeaza ceasul, selectia fiind realizata **combinational**, printr-un multiplexor
