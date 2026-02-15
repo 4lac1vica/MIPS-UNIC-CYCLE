@@ -686,47 +686,422 @@ end Behavioral;
 
    It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
 
-The decision is based on:
+3) **Control Unit(UC)**
+   - Module where all control signals for the processor are generated based on the instruction opcode.
 
-  - control signals:
+  ```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
 
-  - branch → active for beq;
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
 
-  - branchNot → active for bne;
+entity UC is
+    port (
+        instr : in std_logic_vector(5 downto 0);
+        regDst : inout std_logic;
+        extOp : inout std_logic;
+        aluSrc : inout std_logic;
+        branch : inout std_logic;
+        branchNot : inout std_logic;
+        jump : inout std_logic;
+        aluOP : inout std_logic_vector(1 downto 0);
+        memWr : inout std_logic;
+        memToReg : inout std_logic;
+        regWr: inout std_logic
+    );
+end UC;
 
-  - the zero signal from the ALU.
+architecture Behavioral of UC is
+begin
+    process(instr)
+    begin 
+        regDst <= '0';
+        extOp <= '0';
+        aluSrc <= '0';
+        branch <= '0';
+        jump <= '0';
+        aluOP <= "00";
+        memWr <= '0';
+        memToReg <= '0';
+        regWr <= '0';
+        branchNot <= '0';       
+        
+        case instr is 
+            when "000000" => RegDst <= '1'; RegWr <= '1'; aluOP  <= "00";
+            when "001000" => RegWr <= '1'; extOp <= '1'; aluSrc <= '1'; aluOP <= "01";
+            when "100011" => extOp <= '1'; aluSrc <= '1'; RegWr <= '1'; memToReg <= '1'; aluOp <= "01";
+            when "000100" => extOp <= '1'; branch <= '1'; aluOp <= "10";
+            when "000101" => extOp <= '1'; branchNot <= '1'; aluOp <= "10";
+            when "001100" => extOp <= '1'; regWr <= '1'; aluOp <= "11";
+            when "000010" => extOp <= '1'; jump <= '1';
+            when others => end case;
+    end process;
+end Behavioral;
+```
 
-**PCSrc Signal**
+ 4) **SSD1**
+     - VHDL module used to drive the 7-segment display available on the Nexys A7 board.
+       
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-   - controls the PC multiplexer in the Instruction Fetch stage:
+entity SSD1 is
+    Port ( cat : out STD_LOGIC_VECTOR(6 downto 0);
+           digits : in STD_LOGIC_VECTOR(31 downto 0);
+           an : out STD_LOGIC_VECTOR(7 downto 0);
+           clk : in STD_LOGIC);
+end SSD1;
 
-        - pcSrc = 0 → PC ← PC + 4;
+architecture Behavioral of SSD1 is
 
-        - pcSrc = 1 → PC ← branch address computed in EX.The BranchUnit module implements branch decision logic for beq and bne instructions.
+signal digit : STD_LOGIC_VECTOR(3 downto 0);
+signal cnt : STD_LOGIC_VECTOR(16 downto 0) := (others => '0');
+signal sel : STD_LOGIC_VECTOR(2 downto 0);
 
-   - It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+begin
 
-   - The decision is based on:
+    counter : process(clk) 
+    begin
+        if rising_edge(clk) then
+            cnt <= cnt + 1;
+        end if;
+    end process;
 
-      - control signals:
+    sel <= cnt(16 downto 14);
 
-        - branch → active for beq;
+    muxCat : process(sel, digits)
+    begin
+        case sel is
+            when "000" => digit <= digits(3 downto 0);
+            when "001" => digit <= digits(7 downto 4);
+            when "010" => digit <= digits(11 downto 8);
+            when "011" => digit <= digits(15 downto 12);
+            when "100" => digit <= digits(19 downto 16);
+            when "101" => digit <= digits(23 downto 20);
+            when "110" => digit <= digits(27 downto 24);
+            when "111" => digit <= digits(31 downto 28);
+            when others => digit <= (others => 'X');
+        end case;
+    end process;
 
-        - branchNot → active for bne;
+    muxAn : process(sel)
+    begin
+        case sel is
+            when "000" => an <= "11111110";
+            when "001" => an <= "11111101";
+            when "010" => an <= "11111011";
+            when "011" => an <= "11110111";
+            when "100" => an <= "11101111";
+            when "101" => an <= "11011111";
+            when "110" => an <= "10111111";
+            when "111" => an <= "01111111";
+            when others => an <= (others => 'X');
+        end case;
+    end process;
 
-        - the zero signal from the ALU.
-      
-      - PCSrc Signal
+    with digit SELect
+        cat <= "1000000" when "0000",   -- 0
+               "1111001" when "0001",   -- 1
+               "0100100" when "0010",   -- 2
+               "0110000" when "0011",   -- 3
+               "0011001" when "0100",   -- 4
+               "0010010" when "0101",   -- 5
+               "0000010" when "0110",   -- 6
+               "1111000" when "0111",   -- 7
+               "0000000" when "1000",   -- 8
+               "0010000" when "1001",   -- 9
+               "0001000" when "1010",   -- A
+               "0000011" when "1011",   -- b
+               "1000110" when "1100",   -- C
+               "0100001" when "1101",   -- d
+               "0000110" when "1110",   -- E
+               "0001110" when "1111",   -- F
+               (others => 'X') when others;
 
-        - controls the PC multiplexer in the Instruction Fetch stage:
+end Behavioral;
+```
+**Code Notes:**
 
-        - pcSrc = 0 → PC ← PC + 4;
+ - acts as a decoder using active-low logic;
 
-        - pcSrc = 1 → PC ← branch address computed in EX. 
-        - pcSrc = 0 → PC ← PC + 4;
+ - each digit consists of 7 segments labeled from a to g.
 
-        - pcSrc = 1 → PC ← branch address computed in EX.
+5) **MPG(MonoPulse Generator)**
    
+   - VHDL module used to generate a single clock pulse from a push button.
+  
+ ```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity MPG is
+    Port ( enable : out STD_LOGIC;
+           btn : in STD_LOGIC;
+           clk : in STD_LOGIC);
+end MPG;
+
+architecture Behavioral of MPG is
+
+signal cnt_int : STD_LOGIC_VECTOR(17 downto 0) := (others => '0');
+signal Q1, Q2, Q3 : STD_LOGIC;
+
+begin
+
+    enable <= Q2 and (not Q3);
+
+    process(clk)
+    begin
+        if clk='1' and clk'event then
+            cnt_int <= cnt_int + 1;
+        end if;
+    end process;
+
+    process(clk)
+    begin
+        if clk'event and clk='1' then
+            if cnt_int(17 downto 0) = "111111111111111111" then
+                Q1 <= btn;
+            end if;
+        end if;
+    end process;
+
+    process(clk)
+    begin
+        if clk'event and clk='1' then
+            Q2 <= Q1;
+            Q3 <= Q2;
+        end if;
+    end process;
+
+end Behavioral;
+```
+
+ 6) **Test Module**
+    In this module, all previously described components are connected together.
+
+    It represents the top-level testing environment used to validate the processor on hardware.
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity test_env is
+    Port(
+           sw : in std_logic_vector(2 downto 0);
+           bt1 : in std_logic;
+           bt0 : in std_logic;
+           clk : in std_logic;
+           cat : out std_logic_vector(6 downto 0);
+      --     digits : out std_logic_vector(31 downto 0);
+           an : out std_logic_vector(7 downto 0);
+           led : out std_logic_vector(10 downto 0)
+    );
+end test_env;
+
+architecture Behavioral of test_env is
+component IFetch is
+    port (
+        jumpAddress : in std_logic_vector(31 downto 0);
+        branchAdress : in std_logic_vector (31 downto 0);
+        jump : in std_logic;
+        PCSrc : in std_logic;
+        instruction : out std_logic_vector(31 downto 0);
+        out1 : out std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        en : in std_logic;
+        reset : in std_logic
+    );
+end component;
+
+    
+component Decoder is
+    Port(
+        instruction : in std_logic_vector(25 downto 0);
+        wd1 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        rd1 : out std_logic_vector(31 downto 0);
+        rd2 : out std_logic_vector(31 downto 0);
+        extImm : out std_logic_vector(31 downto 0);
+        func : out std_logic_vector(5 downto 0);
+        sa : out std_logic_vector(4 downto 0) 
+    );
+end component;
+
+component MEM is
+    port(
+        memWr : in std_logic;
+        aluResIn : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        en : in std_logic;
+        memData : inout std_logic_vector(31 downto 0);
+        aluResOut : inout std_logic_vector(31 downto 0)
+    );
+end component;
+
+
+component UC is
+    port (
+        instr : in std_logic_vector(5 downto 0);
+        regDst : inout std_logic;
+        extOp : inout std_logic;
+        aluSrc : inout std_logic;
+        branch : inout std_logic;
+        branchNot : inout std_logic;
+        jump : inout std_logic;
+        aluOP : inout std_logic_vector(1 downto 0);
+        memWr : inout std_logic;
+        memToReg : inout std_logic;
+        regWr: inout std_logic
+    );
+end component;
+
+component EX is
+    port (
+        rd1 : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        extImm : in std_logic_vector(31 downto 0);
+        sa : in std_logic_vector(4 downto 0);
+        func : in std_logic_vector(5 downto 0);
+        pc4 : in std_logic_vector(31 downto 0);
+        ba : inout std_logic_vector(31 downto 0);
+        aluSrc : in std_logic;
+        aluOp : in std_logic_vector(1 downto 0);
+        aluRes : out std_logic_vector(31 downto 0);
+        zero : inout std_logic
+    );
+end component;
+
+
+component BranchUnit is
+    port(
+        branch : in std_logic;
+        branchNot : in std_logic;
+        zero : in std_logic;
+        pcSrc : inout std_logic
+    );
+end component;
+
+component JUnit is
+    port(
+        instr : in std_logic_vector(25 downto 0);
+        pcnext :  in std_logic_vector(3 downto 0);
+        ja : inout std_logic_vector(31 downto 0)
+    );
+end component;
+
+
+component SSD1 is
+    Port ( cat : out STD_LOGIC_VECTOR(6 downto 0);
+           digits : in STD_LOGIC_VECTOR(31 downto 0);
+           an : out STD_LOGIC_VECTOR(7 downto 0);
+           clk : in STD_LOGIC);
+end component;
+
+component WriteBack is
+port(
+    memToReg :  in std_logic;
+    aluRezOut : in std_logic_vector(31 downto 0);
+    memData : in std_logic_vector(31 downto 0);
+    writeBack : inout std_logic_vector(31 downto 0)
+   );
+    
+end component;
+
+
+component MPG is
+    Port ( enable : out STD_LOGIC;
+           btn : in STD_LOGIC;
+           clk : in STD_LOGIC);
+end component;
+
+
+
+signal regDst : std_logic;
+signal extOp : std_logic;
+signal aluSrc : std_logic;
+signal branch : std_logic;
+signal branchNot : std_logic;
+signal jump : std_logic;
+signal aluOp : std_logic_vector(1 downto 0);
+signal memWr :  std_logic;
+signal memToReg : std_logic;
+signal regWr :  std_logic;
+signal en : std_logic;
+signal instr : std_logic_vector(31 downto 0);
+signal PC4 : std_logic_vector(31 downto 0);
+signal rd1 : std_logic_vector(31 downto 0);
+signal rd2 : std_logic_vector(31 downto 0);
+signal extImm : std_logic_vector(31 downto 0);
+signal func : std_logic_vector(5 downto 0);
+signal sa : std_logic_vector(4 downto 0);
+signal zero : std_logic;
+signal ba : std_logic_vector(31 downto 0);
+signal aluRes : std_logic_vector(31 downto 0);
+signal aluResOut : std_logic_vector(31 downto 0);
+signal memData : std_logic_vector(31 downto 0);
+signal wb : std_logic_vector(31 downto 0);
+signal ja : std_logic_vector(31 downto 0);
+signal pcSrc : std_logic;
+signal digits : std_logic_vector(31 downto 0);
+
+begin
+   
+   --en <= bt0;
+   
+mpg10 : MPG port map(en, bt0, clk);
+ife : IFetch port map(ja, ba, jump, pcSrc, instr, PC4, clk, en, bt1);
+dec : Decoder port map(instr(25 downto 0), wb, clk, rd1, rd2, extImm, func, sa);
+execution : EX port map(rd1, rd2, extImm, sa, func, PC4, ba, aluSrc, aluOp, aluRes, zero);
+control : UC port map(instr(31 downto 26), regDst, extOp, aluSrc, branch, branchNot, jump, aluOp, memWr, memToReg,regWr);
+memorie : MEM port map(memWr, aluRes, rd2, clk, en, memData, aluResOut);
+writeB : WriteBack port map(memToReg, aluResOut, memData, wb);
+jumpUnit : JUnit port map(instr(25 downto 0), PC4(31 downto 28), ja);  
+branchU : BranchUnit port map(branch, branchNot, zero, pcSrc);
+
+process(sw)
+begin 
+    case sw is 
+        when "000" => digits <= instr;
+        when "001" => digits <= PC4;
+        when "010" => digits <= rd1;
+        when "011" => digits <= rd2;
+        when "100" => digits <= extImm;
+        when "101" => digits <= aluRes;
+        when "110" => digits <= memData;
+        when "111" => digits <= wb;
+        when others => 
+    end case;
+end process;
+
+
+sevensegm : SSD1 port map(cat, digits, an ,clk);
+   
+led(10 downto 0) <= aluOP & regDst & extOP & aluSrc & branch & branchNot & jump & memWr & memToReg & regWr;
+
+
+end Behavioral;
+```
+
+
 ## RO 
 
 Acest proiect a fost realizat pentru cursul de Arhitectura Calculatoarelor. Acest proiect are ca scop implementarea in VHDL a unui procesor MIPS pe 32 de biti, avand arhitectura de tip Unic Cycle.
