@@ -7,6 +7,8 @@ Tools : Xilinx Vivado 2024.1
 
 Tested on Nexys A7. 
 
+**ENGLISH READ ME** -> 
+
 ## RO 
 
 Acest proiect a fost realizat pentru cursul de Arhitectura Calculatoarelor. Acest proiect are ca scop implementarea in VHDL a unui procesor MIPS pe 32 de biti, avand arhitectura de tip Unic Cycle.
@@ -357,3 +359,67 @@ e) **Calculul adresei de branch**
    - Adresa de ramificare este calculata prin:
         - deplasarea la stanga cu 2 biti a valorii imediate( **extImm << 2** );
         - adunarea cu **PC + 4**
+
+
+4) **Memory**
+
+   Modulul **MEM** implementeaza etapa **Memory Access** din arhitectura **MIPS Single Cycle**. Aceasta etapa este utilizata in principal de instructiunile care acceseaza memoria de date, in special **load** si **store**.
+```
+   library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity MEM is
+    port(
+        memWr : in std_logic;
+        aluResIn : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        en : in std_logic;
+        memData : inout std_logic_vector(31 downto 0);
+        aluResOut : inout std_logic_vector(31 downto 0)
+    );
+end MEM;
+
+architecture Behavioral of MEM is
+    type reg_array is array (0 to 63) of std_logic_vector(31 downto 0);
+    signal mem : reg_array := (others => x"00000000");
+begin
+    process(clk)
+    begin 
+        if rising_edge(clk) then
+            if en = '1' and memWr = '1' then 
+                mem(conv_integer(aluResIn(7 downto 2))) <= rd2; 
+            end if;    
+        end if;
+    end process;
+    
+    memData <= mem(conv_integer(aluResIn(7 downto 2)));
+   aluResOut <= aluResIn;
+end Behavioral;
+```
+
+Explicatii ale codului: 
+
+
+-> adresarea memoriei se face folosind bitii **aluResIn(7 downto 2)**, presupunand date aliniate pe 4 octeti.
+
+a) **Operatii de scriere (store)**
+   - pentru instructiunile de tip **store**, scrierea in memoria de date se face:
+        - **sincron cu ceasul**
+        - **pe front crescator**
+        - daca semnalele **en** si **memWr** sunt active
+
+b) **Operatii de citire**
+   - citirea din memoria de date se face **combinational**, iar valoarea citita este disponibila pe iesirea **memData**. Aceasta este utilizata ulterior in etapa **Write Back*.
+
+c) **Propagarea rezultatului ALU**
+   - Rezultatul calculat in etapa **Execute** este propagat mai departe prin rezultatul semnalului **aluResOut**, pentru a fi utilizat in etapa **Write Back**, in cazul in care instructiunea nu acceseaza memoria
