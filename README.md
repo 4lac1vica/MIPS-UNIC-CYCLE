@@ -18,6 +18,7 @@ Un astfel de procesor executa o instructiune complet la un singur ciclu de ceas.
     - Instructiuni de tip R -> Pentru operatii aritmetico-logice (ex add, sub, shl).
     - Instructiuni de tip I -> Pentru operatii de tip immediate (ex andi, ld, st).
     - Instructiuni de tip J -> Pentru operatii de tip jump (ex j, jne).
+      
    Mai jos este prezentata implementarea in VHDL a modulului Instruction Fetch, care include:
     - registrul PC;
     - logica de incrementare (PC + 4);
@@ -121,6 +122,109 @@ begin
 end Behavioral;
 ```
 
-   
+2) **Instruction Decode**
+   In arhitectura MIPS Single Cycle, etapa de Instruction Decode are rolul de a interpreta instructiunea citita in etapa de Instruction Fetch si de a pregati datele necesare executiei.
+   In aceasta etapa, unitatea de control decodifica campul opcode al instructiunii si genereaza semnalele de control corespunzatoare (precum **RegWrite**, **ALUSrc**, **MemRead**, **MemWrite**, **MemToReg**, **Branch**, **Jump**). In paralel, blocul de registre este accesat, iar operanzii sunt cititi pe baza campurilor **rs** si **rt**.
+
+   Pentru instructiunile de tip **I**, valoarea imediata este **extinsa la 32 de biti**. De asemenea, in aceasta etapa se pot calcula adresele pentru ramificatii, folosind valoarea **PC + 4** si offsetul imediat.
+
+   Etapa **nstruction Decode** nu utilizeaza pipeline, toate operatiile fiind realizate in acelasi ciclu de ceas, conform arhitecturii **Single Cycle**.
+
+
+```
+  library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.all;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity Decoder is
+    Port(
+        instruction : in std_logic_vector(25 downto 0);
+        wd1 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        rd1 : out std_logic_vector(31 downto 0);
+        rd2 : out std_logic_vector(31 downto 0);
+        extImm : out std_logic_vector(31 downto 0);
+        func : out std_logic_vector(5 downto 0);
+        sa : out std_logic_vector(4 downto 0) 
+    );
+end Decoder;
+    
+architecture Behavioral of Decoder is
+    type reg_array is array(0 to 31) of std_logic_vector(31 downto 0);
+    signal decoder : reg_array := (others => x"00000000"); 
+    signal regWr : std_logic;
+    signal regDst : std_logic;
+    signal en : std_logic;
+    signal extOp : std_logic;
+begin
+
+    rd1 <= decoder(conv_integer(instruction(25 downto 21)));
+    rd2 <= decoder(conv_integer(instruction(20 downto 16)));
+    
+    process(clk)
+    begin 
+        if rising_edge(clk) then 
+            if (en = '1') then 
+                if regWr = '1' then 
+                    if (regDst = '0') then 
+                        decoder(conv_integer(instruction(20 downto 16))) <= wd1;
+                    else 
+                        decoder(conv_integer(instruction(15 downto 11))) <= wd1;
+                    end if;
+                end if;
+            end if;
+        end if;
+    end process;
+    
+    
+    process(clk)
+    begin
+        if extOp = '0' then 
+            extImm <= x"0000" & instruction(15 downto 0);
+        else 
+            if instruction(15) = '1' then 
+                extImm <= x"1111" & instruction(15 downto 0);
+            else 
+                extImm <= x"0000" & instruction(15 downto 0);
+            end if;
+        end if;
+    end process;
+    
+    func <= instruction(5 downto 0);
+    sa <= instruction(10 downto 6);
+
+end Behavioral;
+```
+Explicatii ale codului: 
+
+a) Fisierul de registrul este implementat ca un array de 32 de registre pe 32 de biti:
+   - Citirea registrelor se face combinational, folosind campurile:
+        - **rs** -> **instruction(25 downto 21)**
+        - **rt** -> **instruction(20 downto 16)**
+   - Valorile citite sunt disponibile pe iesirile **rd1** si **rd2**
+
+b) Scrierea in registrul de fisiere se face **sincron cu ceasul**, pe **front crescator**, daca semnalele permit acest lucru:
+   - **regWr** -> activeaza scrierea;
+   - **regDst** -> selecteaza registrul destinatie:
+        - **rt** pentru instructiuni de tip **I**;
+        - **rd** pentru instructiuni de tip **R**;
+   - **wd1** -> datele care se vor scrie in registru  
+
+c) Extinderea valorii imediate 
+   - Pentru instructiunile de tip **I**, campul imediat de 16 biti este extins la 32 de biti, in functie de semnalul **extOp**:
+        - **extOp** = 0 -> facem extindere cu 0;
+        - **extOp** = 1 -> facem ***sign extend*;
+
+d) Campuri auxiliare pentru executie
+   - **func** -> campul **function(instruction(5 downto 0))**, utilizat de **ALU Control** pentru instructiunile de tip R
+   - **sa** -> campul **shift amount(instruction(10 downto 6))**, utilizat pentru instructiunile de shift.
 
 
