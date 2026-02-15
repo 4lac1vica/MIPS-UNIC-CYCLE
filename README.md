@@ -7,8 +7,696 @@ Tools : Xilinx Vivado 2024.1
 
 Tested on Nexys A7. 
 
-**ENGLISH READ ME** -> 
+## EN
+This project was developed for the Computer Architecture course. The goal of the project is the implementation in VHDL of a 32-bit MIPS processor using a Single-Cycle architecture.
 
+A Single-Cycle processor executes each instruction completely in a single clock cycle. The architecture follows the classic MIPS model and includes the following components:
+
+1) **Instruction Fetch (IF)**
+
+In the MIPS Single-Cycle architecture, the Instruction Fetch stage **is responsible for reading an instruction from the instruction memory** using a value called the **Program Counter (PC)**. In the same clock cycle, the PC is updated with **PC + 4**, preparing the address of the next instruction.
+
+An important aspect to mention is that the instructions are written in MIPS Assembly and converted to binary according to the instruction type. Each instruction can be one of the following types:
+
+- R-type instructions – arithmetic and logical operations (e.g. add, sub, shl);
+
+- I-type instructions – immediate-type operations (e.g. andi, ld, st);
+
+- J-type instructions – jump operations (e.g. j, jne).
+
+Below is the VHDL implementation of the Instruction Fetch module, which includes:
+
+ - the PC register;
+
+ - increment logic (PC + 4);
+
+ - support for branch and jump instructions;
+
+ - instruction memory implemented as a ROM.
+
+  ```
+    entity IFetch is
+    port (
+        jumpAddress : in std_logic_vector(31 downto 0);
+        branchAdress : in std_logic_vector (31 downto 0);
+        jump : in std_logic;
+        PCSrc : in std_logic;
+        instruction : out std_logic_vector(31 downto 0);
+        out1 : out std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        en : in std_logic;
+        reset : in std_logic
+    );
+end IFetch;
+
+architecture Behavioral of IFetch is
+    signal q : std_logic_vector(31 downto 0);
+    signal mux1 : std_logic_vector(31 downto 0);
+    signal d : std_logic_vector(31 downto 0);
+    signal input : std_logic_vector(31 downto 0);
+    signal suma : std_logic_vector(31 downto 0);
+    type ROM is array(0 to 31) of std_logic_vector(31 downto 0);
+    signal mem : ROM := (
+            
+
+            
+            
+        b"001000_00000_01000_0000_0000_0000_0000",   --20080000  -- addi $8,$0,$0
+        b"001000_00000_01001_0000_0000_0010_0000",   --20090020  -- addi $9,$0,32
+        b"001000_00000_00010_0000_0000_0000_0000",   --20020000  -- addi $2,$0,$0
+        b"000100_01001_00000_0000_0000_0000_1110",   --1120000E  -- beq $9,$0,14
+        
+        
+        b"100011_00000_01010_0000_0000_0000_0000",   --8C0A0000  -- lw $10, 0($0)
+        b"000000_00011_00000_01011_00000_100000",    --605820    -- add $11, $3, $0
+        b"001000_01100_00000_0000_0000_0000_0000",   --21800000  -- addi $12, $0, 0
+        b"000100_01011_00000_0000_0000_0000_0000",   --11600000  -- beq $11, $0, 5
+        
+        
+        b"001100_01011_01101_0000_0000_0000_0001",   --316D0001  -- andi $13, $11, 1
+        b"000000_01011_01011_0000_0000_0000_0110",   --16B0006   -- xor $12, $12, $6
+        b"000000_00000_01011_01011_00001_000010",    --B5842     -- srl $11, $11, 1
+        b"000010_0000_0000_0000_0000_0000_001000",   --8000008   -- j 8
+        
+        b"000101_01100_0000_0000_0000_0000_00010",   --15800002  -- bne $12, $0, 2
+        b"000000_00010_01010_00010_00000_100000",    --4A1020    -- add $2, $2, $10
+        b"001000_01000_01000_0000_0000_0000_0100",   --21080004  -- addi $8, $8, 4 
+        b"001000_01001_01001_1111_1111_1111_1111",   --2129FFFF  -- addi $9, $9, -1
+        
+        
+        b"000010_0000_0000_0000_0000_0000_000100",  --8000004   -- j 4
+        b"001000_00000_00010_0000_0000_0000_1010",  --2002000A  -- $2, $0, 10
+        others => x"00000000"
+    );
+    signal romAdress : std_logic_vector(4 downto 0);
+begin
+    process(clk, reset)
+    begin
+        if reset = '1' then 
+            q <= x"00000000";
+        elsif rising_edge(clk) then 
+            if (en = '1') then
+                q <= d;
+            end if;    
+        end if;
+    end process;
+
+    process(jump)
+    begin 
+        case jump is 
+            when '1' => d <= jumpAddress;
+            when '0' => d <= mux1;
+            when others => 
+        end case;  
+    end process;
+    
+    process(PCSrc)
+    begin 
+    case PCSrc is 
+        when '1' => mux1 <= branchAdress;
+        when '0' => mux1 <= suma;
+        when others => 
+    end case;
+    end process;
+    
+    romAdress <= q(6 downto 2);
+    
+    
+    suma <= q + 4;
+    
+    
+    out1 <= suma;
+    instruction <= mem(conv_integer(romAdress));
+     
+end Behavioral;
+```
+
+2) **Instruction Decode**
+
+   In the MIPS Single-Cycle architecture, the Instruction Decode stage interprets the instruction fetched in the Instruction Fetch stage and prepares the data required for execution.
+
+   During this stage:
+
+      - the control unit decodes the opcode field and generates the appropriate control signals (such as RegWrite, ALUSrc, MemRead, MemWrite, MemToReg, Branch, Jump);
+
+      - the register file is accessed, and operands are read based on the rs and rt fields.
+
+   For I-type instructions, the immediate value is extended to 32 bits. Additionally, branch addresses can be computed using PC + 4 and the immediate offset.
+
+   The Instruction Decode stage does not use pipelining; all operations are performed in the same clock cycle, according to the Single-Cycle architecture.
+
+ ```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.all;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity Decoder is
+    Port(
+        instruction : in std_logic_vector(25 downto 0);
+        wd1 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        rd1 : out std_logic_vector(31 downto 0);
+        rd2 : out std_logic_vector(31 downto 0);
+        extImm : out std_logic_vector(31 downto 0);
+        func : out std_logic_vector(5 downto 0);
+        sa : out std_logic_vector(4 downto 0) 
+    );
+end Decoder;
+    
+architecture Behavioral of Decoder is
+    type reg_array is array(0 to 31) of std_logic_vector(31 downto 0);
+    signal decoder : reg_array := (others => x"00000000"); 
+    signal regWr : std_logic;
+    signal regDst : std_logic;
+    signal en : std_logic;
+    signal extOp : std_logic;
+begin
+
+    rd1 <= decoder(conv_integer(instruction(25 downto 21)));
+    rd2 <= decoder(conv_integer(instruction(20 downto 16)));
+    
+    process(clk)
+    begin 
+        if rising_edge(clk) then 
+            if (en = '1') then 
+                if regWr = '1' then 
+                    if (regDst = '0') then 
+                        decoder(conv_integer(instruction(20 downto 16))) <= wd1;
+                    else 
+                        decoder(conv_integer(instruction(15 downto 11))) <= wd1;
+                    end if;
+                end if;
+            end if;
+        end if;
+    end process;
+    
+    
+    process(clk)
+    begin
+        if extOp = '0' then 
+            extImm <= x"0000" & instruction(15 downto 0);
+        else 
+            if instruction(15) = '1' then 
+                extImm <= x"1111" & instruction(15 downto 0);
+            else 
+                extImm <= x"0000" & instruction(15 downto 0);
+            end if;
+        end if;
+    end process;
+    
+    func <= instruction(5 downto 0);
+    sa <= instruction(10 downto 6);
+
+end Behavioral;
+```
+
+Code Explanation
+
+a) **Register File**
+
+   - implemented as an **array of 32 registers**, each 32 bits wide;
+
+   - registers are **read combinationally** using:
+
+      - **rs** → instruction(25 downto 21)
+
+      - **rt** → instruction(20 downto 16)
+
+   - outputs are available on **rd1** and **rd2**
+
+b) **Register Write**
+
+   - performed synchronously with the clock, on the **rising edge**, if enabled:
+
+      - **regWr** enables writing;
+
+      - **regDst** selects the destination register:
+
+         - **rt** for **I-type** instructions;
+
+         - **rd** for **R-type** instructions;
+
+   - **wd1** represents the data written to the register.
+
+c) **Immediate Extension**
+
+   - for **I-type** instructions, the 16-bit **immediate field is extended to 32 bits using extOp**:
+
+      - **extOp = 0** → zero extension;
+
+      - **extOp = 1** → sign extension.
+
+d) **Auxiliary Execution Fields**
+
+**func** → function field (instruction(5 downto 0)), used by the ALU Control for **R-type instructions**;
+
+**sa** → shift amount field (instruction(10 downto 6)), used for **shift operations**.
+
+
+3) **Execution (EX)**
+
+   The EX module implements the Execute stage of the MIPS Single-Cycle architecture. This stage is responsible for performing arithmetic and logical operations, computing branch addresses, and evaluating branch conditions.
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity EX is
+    port (
+        rd1 : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        extImm : in std_logic_vector(31 downto 0);
+        sa : in std_logic_vector(4 downto 0);
+        func : in std_logic_vector(5 downto 0);
+        pc4 : in std_logic_vector(31 downto 0);
+        ba : inout std_logic_vector(31 downto 0);
+        aluSrc : in std_logic;
+        aluOp : in std_logic_vector(1 downto 0);
+        aluRes : out std_logic_vector(31 downto 0);
+        zero : inout std_logic
+    );
+end EX;
+
+architecture Behavioral of EX is
+    signal aluCtrl : std_logic_vector(2 downto 0);
+    signal aluRez1 : std_logic_vector(31 downto 0);
+begin
+    zero <= '0';
+    process(aluOp, func)
+    begin
+        case AluOp is 
+            when "00" => 
+                case func is
+                    when "000001" => aluCtrl <= "000";
+                    when "000010" => aluCtrl <= "010";
+                    when "000100" => aluCtrl <= "100";
+                    when others => 
+                end case;  
+            when "01" => aluCtrl <= "000";
+            when "10" => aluCtrl <= "001";
+            when "11" => aluCtrl <= "011";
+            when others =>    
+        end case;    
+    end process;
+    
+    
+    process(aluCtrl, aluSrc, rd1, sa)
+    begin
+        if (aluSrc = '0') then 
+            case aluCtrl is 
+               when "000" => aluRez1 <= rd1 + rd2;
+               when "010" => aluRez1 <= rd1 xor rd2;
+               when "100" => aluRez1 <= to_stdlogicvector(to_bitvector(rd2) srl conv_integer(sa));
+               when others =>
+            end case;   
+                 
+        else 
+            case aluCtrl is 
+                when "000" => aluRez1 <= rd1 + extImm;
+                when "001" => aluRez1 <= rd1 - extImm;
+                when "011" => aluRez1 <= rd1 and extImm;
+                when others => 
+            end case;     
+        end if;
+    end process;
+    
+  aluRes <= aluRez1;
+  
+  
+  process(aluRez1)
+  begin 
+    if (aluRez1 = x"000000000") then 
+        zero <= '1'; 
+    end if;  
+  end process;
+  
+  
+  ba <= (extImm(29 downto 0) & "00") + pc4;
+  
+  
+end Behavioral;
+```
+
+a) **ALU Control**
+
+   - **ALU control** signals are generated based on:
+
+      - **aluOp** – signal from the **main control unit**;
+
+      - **func** – function field for **R-type instructions**.
+
+   - These signals determine the operation executed by the ALU.
+
+b) **Operand Selection**
+
+   - the **ALU** receives:
+
+      - **the first operand from rd1**;
+
+      - the second operand depending on aluSrc:
+
+         - **rd2** for R-type instructions;
+
+         - **extImm** for I-type instructions.
+
+c) **ALU Operations**
+
+   - supported operations:
+
+      - **ADD**
+
+      - **SUB**
+
+      - **AND**
+
+      - **XOR**
+
+      - **SRL** (shift right logical) using the sa field.
+
+d) **Zero Signal**
+
+   - the **zero signal** is set when the ALU result equals **zero**;
+
+   - used to evaluate **branch instructions (beq, bne)**.
+
+e) **Branch Address Calculation**
+
+   - the **branch address** is computed by:
+
+      - left-shifting the immediate value by 2 bits (**extImm << 2**);
+
+      - adding it to **PC + 4**.
+   
+4) **Memory**
+
+   The **MEM module** implements the **Memory Access stage** of the MIPS Single-Cycle architecture. This stage is mainly used by instructions that **access data memory, especially load and store**.
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity MEM is
+    port(
+        memWr : in std_logic;
+        aluResIn : in std_logic_vector(31 downto 0);
+        rd2 : in std_logic_vector(31 downto 0);
+        clk : in std_logic;
+        en : in std_logic;
+        memData : inout std_logic_vector(31 downto 0);
+        aluResOut : inout std_logic_vector(31 downto 0)
+    );
+end MEM;
+
+architecture Behavioral of MEM is
+    type reg_array is array (0 to 63) of std_logic_vector(31 downto 0);
+    signal mem : reg_array := (others => x"00000000");
+begin
+    process(clk)
+    begin 
+        if rising_edge(clk) then
+            if en = '1' and memWr = '1' then 
+                mem(conv_integer(aluResIn(7 downto 2))) <= rd2; 
+            end if;    
+        end if;
+    end process;
+    
+    memData <= mem(conv_integer(aluResIn(7 downto 2)));
+   aluResOut <= aluResIn;
+end Behavioral;
+```
+**Code Explanation**
+
+ - memory addressing uses **aluResIn(7 downto 2)**, assuming data is aligned on **4-byte boundaries**.
+
+a) **Store Operations**
+
+   - data is written to memory:
+
+   - synchronously with the clock;
+
+   - on the rising edge;
+
+   - when en and memWr are asserted.
+
+b) **Load Operations**
+
+   - **memory read is performed combinationally**;
+
+   - the read value is available on **memData**, later used in the Write Back stage.
+
+c) **ALU Result Propagation**
+
+   - the **ALU** result from the **Execute stage** is forwarded **via aluResOut** to the **Write Back stage** when memory is **not** accessed.
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity WriteBack is
+
+port(
+    memToReg :  in std_logic;
+    aluRezOut : in std_logic_vector(31 downto 0);
+    memData : in std_logic_vector(31 downto 0);
+    writeBack : inout std_logic_vector(31 downto 0)
+   );
+    
+end WriteBack;
+
+architecture Behavioral of WriteBack is
+begin
+    process(memToReg)
+    begin 
+        if memToReg = '0' then 
+            writeBack <= aluRezOut;
+        else 
+            writeBack <= memData;
+        end if;    
+    end process;
+
+end Behavioral;
+```
+
+
+
+
+5) **Write Back (WB)**
+
+The **WriteBack module** implements the **final stage** of the **MIPS Single-Cycle architecture**. Its role is **to select the final value that will be written into the register file**.
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity WriteBack is
+
+port(
+    memToReg :  in std_logic;
+    aluRezOut : in std_logic_vector(31 downto 0);
+    memData : in std_logic_vector(31 downto 0);
+    writeBack : inout std_logic_vector(31 downto 0)
+   );
+    
+end WriteBack;
+
+architecture Behavioral of WriteBack is
+begin
+    process(memToReg)
+    begin 
+        if memToReg = '0' then 
+            writeBack <= aluRezOut;
+        else 
+            writeBack <= memData;
+        end if;    
+    end process;
+
+end Behavioral;
+```
+**Code Explanation**
+
+a) **Data Source Selection**
+
+   - depending on the **instruction type**, the data written to the register can come from:
+
+      - **ALU** result (**aluRezOut**):
+
+      - **arithmetic and logical R-type instructions**;
+
+      - **I-type** instructions that do not access memory;
+
+   - memory data (memData):
+
+   - load instructions.
+
+   - selection is controlled by **memToReg**:
+
+      - **memToReg = 0 → ALU result**;
+
+      - **memToReg = 1→ memory data**.
+
+b) **Write Back Output**
+
+   - **writeBack** represents the final value sent to the register file;
+
+   - **writing occurs in the Instruction Decode stage**;
+
+   - this stage is **purely combinational**, implemented using a **multiplexer**.
+
+6) **Auxiliary Modules**
+   
+      During the implementation, several auxiliary modules were used to support the main components and testing.
+
+   1) **JUnit (Jump Unit)**
+
+      This module implements the logic required to compute the jump address in the MIPS Single-Cycle architecture.
+
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity JUnit is
+    port(
+        instr : in std_logic_vector(25 downto 0);
+        pcnext :  in std_logic_vector(3 downto 0);
+        ja : inout std_logic_vector(31 downto 0)
+    );
+end JUnit;
+
+architecture Behavioral of JUnit is
+   
+begin
+    ja <= pcnext & instr & "00";
+end Behavioral;
+```
+   
+   It is used by all J-type instructions.
+
+   For jump instructions:
+
+   - the target address is not computed by the ALU;
+
+   - it is formed by concatenating fields from the instruction and the upper bits of PC + 4:
+
+      - most significant bits from PC + 4;
+
+      - next 26 bits from instr(25 downto 0);
+
+      - last two bits are 00, since instructions are aligned on 4 bytes.
+    
+   2) **BranchUnit**
+      The BranchUnit module implements branch decision logic for beq and bne instructions.
+
+      It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+
+      The decision is based on:
+
+         - control signals:
+
+         - branch → active for beq;
+
+         - branchNot → active for bne;
+
+         - the zero signal from the ALU.
+
+   **PCSrc Signal**
+
+      -The BranchUnit module implements branch decision logic for beq and bne instructions.
+
+It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+
+The decision is based on:
+
+control signals:
+
+branch → active for beq;
+
+branchNot → active for bne;
+
+the zero signal from the ALU.
+
+PCSrc Signal
+
+controls the PC multiplexer in the Instruction Fetch stage:
+
+pcSrc = 0 → PC ← PC + 4;
+
+pcSrc = 1 → PC ← branch address computed in EX.The BranchUnit module implements branch decision logic for beq and bne instructions.
+
+It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+
+The decision is based on:
+
+control signals:
+
+branch → active for beq;
+
+branchNot → active for bne;
+
+the zero signal from the ALU.
+
+PCSrc Signal
+
+controls the PC multiplexer in the Instruction Fetch stage:
+
+pcSrc = 0 → PC ← PC + 4;
+
+pcSrc = 1 → PC ← branch address computed in EX. 
+pcSrc = 0 → PC ← PC + 4;
+
+pcSrc = 1 → PC ← branch address computed in EX.
+   
 ## RO 
 
 Acest proiect a fost realizat pentru cursul de Arhitectura Calculatoarelor. Acest proiect are ca scop implementarea in VHDL a unui procesor MIPS pe 32 de biti, avand arhitectura de tip Unic Cycle.
@@ -237,6 +925,8 @@ d) Campuri auxiliare pentru executie
 
    Modulul **EX** implementeaza etapa de execute in arhitectura **MIPS Unic Cycle**. Aceasta etapa responsabila de efectuarea operatiilor aritmetice si logice, de calculul adreselor instructiunilor de tip ***branch*,
    precum si evaluarea conditiilor de ramificare.
+
+   
 
    
 
@@ -982,3 +1672,9 @@ led(10 downto 0) <= aluOP & regDst & extOP & aluSrc & branch & branchNot & jump 
 
 end Behavioral;
 ```
+
+
+
+
+[Back to the start](https://github.com/4lac1vica/MIPS-UNIC-CYCLE/tree/main)
+
