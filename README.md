@@ -649,53 +649,83 @@ end Behavioral;
          - branchNot → active for bne;
 
          - the zero signal from the ALU.
+     
+```
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.all;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity BranchUnit is
+    port(
+        branch : in std_logic;
+        branchNot : in std_logic;
+        zero : in std_logic;
+        pcSrc : inout std_logic
+    );
+end BranchUnit;
+
+architecture Behavioral of BranchUnit is
+    
+begin
+    pcSrc <= (branch and zero) or (branchNot and (not zero)); 
+end Behavioral;
+```
 
    **PCSrc Signal**
 
-      -The BranchUnit module implements branch decision logic for beq and bne instructions.
+   The BranchUnit module implements branch decision logic for beq and bne instructions.
 
-It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
-
-The decision is based on:
-
-control signals:
-
-branch → active for beq;
-
-branchNot → active for bne;
-
-the zero signal from the ALU.
-
-PCSrc Signal
-
-controls the PC multiplexer in the Instruction Fetch stage:
-
-pcSrc = 0 → PC ← PC + 4;
-
-pcSrc = 1 → PC ← branch address computed in EX.The BranchUnit module implements branch decision logic for beq and bne instructions.
-
-It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+   It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
 
 The decision is based on:
 
-control signals:
+  - control signals:
 
-branch → active for beq;
+  - branch → active for beq;
 
-branchNot → active for bne;
+  - branchNot → active for bne;
 
-the zero signal from the ALU.
+  - the zero signal from the ALU.
 
-PCSrc Signal
+**PCSrc Signal**
 
-controls the PC multiplexer in the Instruction Fetch stage:
+   - controls the PC multiplexer in the Instruction Fetch stage:
 
-pcSrc = 0 → PC ← PC + 4;
+        - pcSrc = 0 → PC ← PC + 4;
 
-pcSrc = 1 → PC ← branch address computed in EX. 
-pcSrc = 0 → PC ← PC + 4;
+        - pcSrc = 1 → PC ← branch address computed in EX.The BranchUnit module implements branch decision logic for beq and bne instructions.
 
-pcSrc = 1 → PC ← branch address computed in EX.
+   - It decides whether the Program Counter should be updated with the branch address or continue sequential execution (PC + 4).
+
+   - The decision is based on:
+
+      - control signals:
+
+        - branch → active for beq;
+
+        - branchNot → active for bne;
+
+        - the zero signal from the ALU.
+      
+      - PCSrc Signal
+
+        - controls the PC multiplexer in the Instruction Fetch stage:
+
+        - pcSrc = 0 → PC ← PC + 4;
+
+        - pcSrc = 1 → PC ← branch address computed in EX. 
+        - pcSrc = 0 → PC ← PC + 4;
+
+        - pcSrc = 1 → PC ← branch address computed in EX.
    
 ## RO 
 
