@@ -13,6 +13,7 @@ Acest proiect a fost realizat pentru cursul de Arhitectura Calculatoarelor. Aces
 Un astfel de procesor executa o instructiune complet la un singur ciclu de ceas. Arhitectura respecta modelul clasic de MIPS si include urmatoarele componente:
 
 1) Instruction Fetch
+   
    In arhitectura MIPS Single Cycle, etapa Instruction Fetch are ca scop citirea unei instructiuni din memoria de instructiuni, folosind o valoare denumita "Program Counnter" (PC). In acelasi ciclu de ceas, PC-ul este actualizat cu PC+4,
    pregatind adresa urmatoarei instructiuni. Un alt lucru important de mentionat este faptul ca instructiunile sunt scrise in MIPS Assembly, fiind convertite la binar folosind un protcol de convertire, in functie de tipul instructiunii.    Fiecare instructiune poate sa fie de 3 tipuri:
     - Instructiuni de tip R -> Pentru operatii aritmetico-logice (ex add, sub, shl).
@@ -123,12 +124,13 @@ end Behavioral;
 ```
 
 2) **Instruction Decode**
+
    In arhitectura MIPS Single Cycle, etapa de Instruction Decode are rolul de a interpreta instructiunea citita in etapa de Instruction Fetch si de a pregati datele necesare executiei.
    In aceasta etapa, unitatea de control decodifica campul opcode al instructiunii si genereaza semnalele de control corespunzatoare (precum **RegWrite**, **ALUSrc**, **MemRead**, **MemWrite**, **MemToReg**, **Branch**, **Jump**). In paralel, blocul de registre este accesat, iar operanzii sunt cititi pe baza campurilor **rs** si **rt**.
 
    Pentru instructiunile de tip **I**, valoarea imediata este **extinsa la 32 de biti**. De asemenea, in aceasta etapa se pot calcula adresele pentru ramificatii, folosind valoarea **PC + 4** si offsetul imediat.
 
-   Etapa **nstruction Decode** nu utilizeaza pipeline, toate operatiile fiind realizate in acelasi ciclu de ceas, conform arhitecturii **Single Cycle**.
+   Etapa **Instruction Decode** nu utilizeaza pipeline, toate operatiile fiind realizate in acelasi ciclu de ceas, conform arhitecturii **Single Cycle**.
 
 
 ```
@@ -205,7 +207,7 @@ end Behavioral;
 ```
 Explicatii ale codului: 
 
-a) Fisierul de registrul este implementat ca un array de 32 de registre pe 32 de biti:
+a) Fisierul de registrii este implementat ca un array de 32 de registre pe 32 de biti:
    - Citirea registrelor se face combinational, folosind campurile:
         - **rs** -> **instruction(25 downto 21)**
         - **rt** -> **instruction(20 downto 16)**
